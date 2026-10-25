@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ru" class="theme-pink">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cozy Frog Finance</title>
+
+        <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f477a4">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============ ТЕМЫ ============ */
+        :root, html.theme-frog {
+            --bg-gradient: linear-gradient(145deg, #f2f7ea 0%, #e3ebd4 52%, #f0f5e8 100%);
+            --card-bg: #fdfff9;
+            --text-main: #2f3b2a;
+            --text-muted: #8a9780;
+            --primary: #8B9A6B;
+            --primary-light: #e8eedc;
+            --accent: #5C6B40;
+            --border: #dde6cf;
+            --btn-text: #ffffff;
+            --blush: #f5afaf;
+            --assistant-body: #f2e3b6;
+            --income: #4caf7a;
+            --expense: #e07a7a;
+            --nav-bg: rgba(253,255,249,.96);
+            --cal-work-bg: #e8eedc;
+            --cal-work-text: #5C6B40;
+            --cal-vacation-bg: #f8e4c0;
+            --cal-vacation-text: #9a6a20;
+            --cal-sick-bg: #d8e4e8;
+            --cal-sick-text: #4a6a80;
+            --cal-weekend-bg: #F0F0F0;
+            --cal-weekend-text: #9E9E9E;
+        }
+        html.theme-pink {
+            --bg-gradient: linear-gradient(145deg, #fff0f3 0%, #fde7ed 52%, #fff4f6 100%);
+            --card-bg: #fffdfd;
+            --text-main: #352830;
+            --text-muted: #a18d96;
+            --primary: #f477a4;
+            --primary-light: #ffe5ed;
+            --accent: #dc6e96;
+            --border: #f8e5eb;
+            --btn-text: #ffffff;
+            --blush: #ffc2d1;
+            --assistant-body: #fff8fa;
+            --income: #61b698;
+            --expense: #e97b96;
+            --nav-bg: rgba(255,253,253,.96);
+            --cal-work-bg: #ffe5ed;
+            --cal-work-text: #dc6e96;
+            --cal-vacation-bg: #FFF3E0;
+            --cal-vacation-text: #E65100;
+            --cal-sick-bg: #E1F5FE;
+            --cal-sick-text: #0277BD;
+            --cal-weekend-bg: #F0F0F0;
+            --cal-weekend-text: #9E9E9E;
+        }
+        html.theme-blue {
+            --bg-gradient: linear-gradient(145deg, #f0f8ff 0%, #e0f2fe 52%, #f5fbff 100%);
+            --card-bg: #fbfeff;
+            --text-main: #2f3c48;
+            --text-muted: #78909c;
+            --primary: #6da2c4;
+            --primary-light: #e3f2fb;
+            --accent: #4a7fa0;
+            --border: #dceef9;
+            --btn-text: #ffffff;
+            --blush: #ffc2d1;
+            --assistant-body: #ffffff;
+            --income: #4db69d;
+            --expense: #e08096;
+            --nav-bg: rgba(251,254,255,.96);
+            --cal-work-bg: #e3f2fb;
+            --cal-work-text: #4a7fa0;
+            --cal-vacation-bg: #fce8e0;
+            --cal-vacation-text: #c05a3a;
+            --cal-sick-bg: #ece5f8;
+            --cal-sick-text: #6a4a9a;
+            --cal-weekend-bg: #eceff1;
+            --cal-weekend-text: #78909c;
+        }
+
+        /* ============ БАЗА ============ */
+        * { -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-size: 14px;
+            transition: background 0.3s ease, color 0.3s ease;
+            margin: 0; padding: 0;
+            display: flex; justify-content: center;
+            min-height: 100vh; overflow-x: hidden;
+        }
+        .app-container {
+            width: 100%; max-width: 440px;
+            position: relative;
+            padding-bottom: 115px;
+            min-height: 100dvh;
+        }
+        .glass-card, .main-window {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            box-shadow: 0 5px 18px rgba(0,0,0,.05);
+            border-radius: 22px;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+        .theme-text { color: var(--accent) !important; }
+        .theme-text-muted { color: var(--text-muted) !important; }
+        .theme-btn {
+            background: var(--primary);
+            color: var(--btn-text);
+            border-radius: 999px;
+            box-shadow: 0 5px 13px rgba(0,0,0,.12);
+            transition: transform .15s;
+        }
+        .theme-btn:active { transform: scale(0.96); }
+        .theme-input, .theme-select {
+            background: var(--primary-light);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 14px;
+            transition: all 0.2s;
+        }
+        .theme-input:focus, .theme-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,0,0,.06);
+        }
+
+                /* ============ СТРАНИЦЫ ============ */
+        .page { display: none; padding: 28px 20px 140px; } /* <-- увеличили нижний отступ до 140px */
+        .page.active {
+            display: block;
+            animation: referenceSlide .24s ease-out;
+        }
+        @keyframes referenceSlide {
+            from { opacity: .65; transform: translateY(7px); }
+            to   { opacity: 1;   transform: translateY(0); }
+        }
+
+        /* ============ АССИСТЕНТЫ ============ */
+        @keyframes jump {
+            0%, 100% { transform: translateY(0) scale(1, 1); }
+            50% { transform: translateY(-8px) scale(1.02, 0.98); }
+            60% { transform: translateY(0) scale(0.98, 1.02); }
+        }
+        @keyframes slump {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(4px) rotate(-2deg); }
+        }
+        @keyframes pearlJump {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .assistant-happy { animation: jump 2s infinite ease-in-out; }
+        .assistant-sad { animation: slump 3s infinite ease-in-out; }
+        .pearl-happy { animation: pearlJump 2s infinite ease-in-out; transform-origin: center bottom; }
+        .pearl-sad { animation: slump 3s ease-in-out infinite; transform-origin: center bottom; }
+        .assistant-svg { display: none; width: 100%; height: 100%; filter: drop-shadow(0 4px 3px rgba(0,0,0,.06)); }
+        .assistant-svg.active { display: block; }
+
+        /* ============ НИЖНЕЕ МЕНЮ ============ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 440px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 22px 22px 0 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 10px calc(12px + env(safe-area-inset-bottom));
+            box-shadow: 0 -5px 22px rgba(0,0,0,.06);
+            z-index: 40;
+            border-top: 1px solid var(--border);
+        }
+        .nav-item { color: var(--text-muted); gap: 4px; font-size: 9px; min-width: 48px; transition: color .15s; }
+        .nav-item svg { width: 20px; height: 20px; }
+        .nav-item.theme-text { color: var(--accent) !important; }
+        .bottom-nav .relative.-top-6 { top: -13px; }
+        .bottom-nav .relative.-top-6 button {
+            width: 49px;
+            height: 49px;
+            border: 4px solid #fff;
+            background: var(--primary);
+            box-shadow: 0 5px 13px rgba(0,0,0,.15);
+        }
+        .bottom-nav .relative.-top-6 svg { width: 23px; height: 23px; }
+
+        /* ============ МОДАЛКИ ============ */
+        .modal { display: none; }
+        .modal.active { display: flex; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal { background: rgba(0,0,0,.28); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+        .modal > .glass-card {
+            border-radius: 27px;
+            box-shadow: 0 15px 45px rgba(0,0,0,.18);
+        }
+
+        /* ============ КАЛЕНДАРЬ ============ */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .day-work { background: var(--cal-work-bg); color: var(--cal-work-text); }
+        .day-vacation { background: var(--cal-vacation-bg); color: var(--cal-vacation-text); }
+        .day-sick { background: var(--cal-sick-bg); color: var(--cal-sick-text); }
+        .day-weekend { background: var(--cal-weekend-bg); color: var(--cal-weekend-text); }
+        .day-empty { background: transparent; pointer-events: none; }
+
+        ::-webkit-scrollbar { display: none; }
+
+        /* ============ ПЕРЕКЛЮЧАТЕЛЬ ТЕМ ============ */
+        .theme-switcher {
+            position: absolute !important;
+            top: 20px !important;
+            right: 20px !important;
+            z-index: 50;
+            display: flex !important;
+            gap: 7px;
+            padding: 6px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,.06);
+        }
+        .theme-switcher .swatch {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,.1);
+            cursor: pointer;
+            padding: 0;
+            transition: transform .15s, box-shadow .15s;
+        }
+        .theme-switcher .swatch:hover { transform: scale(1.12); }
+        .theme-switcher .swatch:active { transform: scale(.9); }
+        html.theme-frog .theme-switcher .swatch:nth-child(1),
+        html.theme-pink .theme-switcher .swatch:nth-child(2),
+        html.theme-blue .theme-switcher .swatch:nth-child(3) {
+            box-shadow: 0 0 0 2px var(--primary), 0 2px 5px rgba(0,0,0,.1);
+            transform: scale(1.05);
+        }
+
+        /* ============ ПОЛИРОВКА МАКЕТА ============ */
+        h1 {
+            font-size: 27px !important;
+            line-height: 1.12 !important;
+            letter-spacing: -.8px !important;
+            color: var(--text-main) !important;
+            margin-bottom: 7px !important;
+        }
+        h2 { letter-spacing: -.45px; }
+        h3 { letter-spacing: -.2px; }
+
+        /* Главная */
+        #page-home header { margin-bottom: 20px !important; padding-right: 72px; }
+        #page-home header:after {
+            content: '☀️';
+            position: absolute;
+            right: 28px;
+            top: 69px;
+            font-size: 37px;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,.08));
+        }
+        #page-home .glass-card:first-of-type {
+            padding: 14px 16px !important;
+            margin-bottom: 23px !important;
+            border: 0 !important;
+            border-radius: 23px !important;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--card-bg) 100%) !important;
+            box-shadow: 0 9px 22px rgba(0,0,0,.08) !important;
+            min-height: 165px;
+            position: relative;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 10px;
+        }
+        #page-home .glass-card:first-of-type #assistant-advice {
+            font-size: 11px !important;
+            line-height: 1.45 !important;
+        }
+        #page-home .glass-card:first-of-type .assistant-bubble {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 12px 14px !important;
+            border-radius: 15px !important;
+            background: #fff !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: 0 4px 14px rgba(0,0,0,.05) !important;
+            position: relative;
+        }
+        #page-home #assistant-container {
+            width: 130px !important;
+            height: 130px !important;
+            flex-shrink: 0;
+            margin: 0 !important;
+        }
+        #page-home .glass-card:first-of-type:after {
+            content: '♡';
+            position: absolute;
+            right: 22px;
+            top: 12px;
+            color: var(--primary);
+            font-size: 22px;
+            opacity: .35;
+            pointer-events: none;
+        }
+        #page-home .flex.justify-between.items-center.mb-4.px-2 {
+            margin: 18px 1px 10px !important;
+            padding: 0 2px !important;
+        }
+        #page-home .flex.justify-between.items-center.mb-4.px-2 h2 {
+            font-size: 16px !important;
+            color: var(--text-main) !important;
+        }
+        #page-home .flex.justify-between.items-center.mb-4.px-2 button {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px 0 !important;
+            color: var(--accent) !important;
+        }
+
+        /* Списки */
+        #accounts-container, #goals-container, #subs-container {
+            gap: 9px !important;
+            margin-bottom: 22px !important;
+        }
+        #accounts-container .main-window,
+        #goals-container .main-window,
+        #subs-container .main-window {
+            padding: 13px !important;
+            border-radius: 17px !important;
+            border-width: 1px !important;
+        }
+        #accounts-container .text-xl { font-size: 18px !important; }
+        #accounts-container .w-12.h-12 {
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 13px !important;
+            background: var(--primary-light) !important;
+        }
+        #goals-container .w-full.h-2\.5 { height: 7px !important; }
+
+        /* Аналитика */
+        #page-transactions .glass-card { padding: 17px !important; margin-bottom: 20px !important; }
+        #page-transactions .glass-card h3 { font-size: 15px !important; }
+        #btn-chart-exp, #btn-chart-inc { border-radius: 999px !important; }
+        #page-transactions #transactions-list { gap: 8px !important; }
+        #transactions-list .main-window {
+            padding: 11px !important;
+            border-radius: 15px !important;
+            border-width: 1px !important;
+        }
+
+        /* Зарплата */
+        #page-salary .glass-card { padding: 18px !important; border-radius: 21px !important; }
+        #next-payout-amount { font-size: 35px !important; color: var(--accent) !important; }
+
+        /* Профиль */
+        #page-profile .glass-card { padding: 19px !important; }
+
+        /* Планшет */
+        @media (min-width: 600px) {
+            body { padding: 22px 0; }
+            .app-container {
+                min-height: calc(100dvh - 44px);
+                border-radius: 34px;
+                overflow: hidden;
+                box-shadow: 0 15px 55px rgba(0,0,0,.08);
+                background: rgba(255,255,255,.25);
+            }
+            .bottom-nav {
+                bottom: 22px !important;
+                border-radius: 22px !important;
+                width: min(calc(100% - 30px), 410px) !important;
+                border: 1px solid var(--border) !important;
+            }
+        }
+        @media (max-width: 360px) {
+            .page { padding-left: 16px !important; padding-right: 16px !important; }
+            #page-home #assistant-container { width: 105px !important; height: 105px !important; }
+            #page-home .glass-card:first-of-type #assistant-advice { font-size: 10.5px !important; }
+            .bottom-nav { padding-left: 5px !important; padding-right: 5px !important; }
+            .nav-item { min-width: 42px !important; }
+        }
+
+        /* Скины ассистентов (возвращены в исходное состояние) */
+        .skin-normal, .skin-beach, .skin-sick { transition: opacity 0.3s ease; }
+        .skin-beach, .skin-sick { opacity: 0; pointer-events: none; }
+        
+        .assistant-svg[data-skin="beach"] .skin-normal { opacity: 0; pointer-events: none; }
+        .assistant-svg[data-skin="beach"] .skin-beach { opacity: 1; pointer-events: auto; }
+        
+        .assistant-svg[data-skin="sick"] .skin-normal { opacity: 0; pointer-events: none; }
+        .assistant-svg[data-skin="sick"] .skin-sick { opacity: 1; pointer-events: auto; }
+    </style>
+
+    <script>
+        const savedTheme = localStorage.getItem('frog-finance-theme') || 'theme-pink';
+        document.documentElement.className = savedTheme;
+    </script>
+</head>
+<body>
+
+    <!-- SVG-спрайт иконок -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+        <symbol id="ico-in" viewBox="0 0 24 24">
+            <rect x="2" y="6" width="20" height="13" rx="3" fill="#d9f0e4" stroke="#4caf7a" stroke-width="1.6"/>
+            <path d="M12 16V9.5M12 9.5l-2.5 2.5M12 9.5l2.5 2.5" fill="none" stroke="#3d8a63" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6.5" cy="10.5" r="1" fill="#4caf7a"/>
+        </symbol>
+        <symbol id="ico-out" viewBox="0 0 24 24">
+            <rect x="2" y="6" width="20" height="13" rx="3" fill="#fbe0e6" stroke="#e07a7a" stroke-width="1.6"/>
+            <path d="M12 9v6.5M12 15.5l-2.5-2.5M12 15.5l2.5-2.5" fill="none" stroke="#b95a5a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6.5" cy="10.5" r="1" fill="#e07a7a"/>
+        </symbol>
+        <symbol id="ico-clock" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" fill="#fdeccb" stroke="#d99a3a" stroke-width="1.6"/>
+            <path d="M12 7.5V12l3 2" fill="none" stroke="#b57c22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </symbol>
+        <symbol id="ico-check" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" fill="#d9f0e4" stroke="#4caf7a" stroke-width="1.6"/>
+            <path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="#3d8a63" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </symbol>
+        <symbol id="ico-wallet" viewBox="0 0 24 24">
+            <rect x="2.5" y="6" width="19" height="13" rx="3" fill="#e3eefb" stroke="#6da2c4" stroke-width="1.6"/>
+            <path d="M2.5 10h19" stroke="#6da2c4" stroke-width="1.6"/>
+            <rect x="15" y="12.5" width="4.5" height="3.5" rx="1.2" fill="#fff" stroke="#6da2c4" stroke-width="1.4"/>
+            <circle cx="17.3" cy="14.2" r="0.8" fill="#6da2c4"/>
+        </symbol>
+        <symbol id="ico-target" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" fill="#fbe3ec" stroke="#dc6e96" stroke-width="1.6"/>
+            <circle cx="12" cy="12" r="5.5" fill="#fff" stroke="#dc6e96" stroke-width="1.6"/>
+            <circle cx="12" cy="12" r="2" fill="#dc6e96"/>
+        </symbol>
+    </defs>
+</svg>
+
+    <div class="app-container">
+
+        <!-- ПЕРЕКЛЮЧАТЕЛЬ ТЕМ -->
+        <div class="theme-switcher">
+            <button onclick="setTheme('theme-frog')" class="swatch" style="background:linear-gradient(135deg,#a8c48a,#7a8a5b);" title="Лягушка"></button>
+            <button onclick="setTheme('theme-pink')" class="swatch" style="background:linear-gradient(135deg,#f9a8c5,#f477a4);" title="Котик"></button>
+            <button onclick="setTheme('theme-blue')" class="swatch" style="background:linear-gradient(135deg,#bde0f5,#8ec5fc);" title="Ракушка"></button>
+        </div>
+
+        <!-- Кнопка профиля (левый верхний угол) -->
+        <button onclick="goToProfile()" class="absolute top-6 left-5 z-50 w-10 h-10 flex items-center justify-center rounded-full shadow-md active:scale-90 transition-transform" style="background: var(--card-bg); border: 1px solid var(--border); color: var(--accent);">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+        </button>
+
+        <!-- ==================== ГЛАВНЫЙ ЭКРАН ==================== -->
+        <main id="page-home" class="page active pt-16">
+            <header class="mb-8">
+                <h1 class="text-4xl font-black mb-1 theme-text tracking-tight">Привет!</h1>
+                <p class="text-sm theme-text-muted font-bold">Твои финансы под контролем ✨</p>
+            </header>
+
+            <div class="glass-card p-6 relative overflow-hidden flex items-center mb-8">
+                <!-- Ассистент слева -->
+                <div id="assistant-container" class="w-44 h-44 relative z-10 cursor-pointer assistant-sad" onclick="analyzeFinances()">
+                    <!-- Лягушка -->
+                    <svg id="svg-frog" class="assistant-svg active" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="50" cy="60" rx="38" ry="32" fill="var(--assistant-body)" stroke="var(--primary)" stroke-width="3"/>
+                        <circle cx="30" cy="38" r="14" fill="var(--assistant-body)" stroke="var(--primary)" stroke-width="3"/>
+                        <circle cx="70" cy="38" r="14" fill="var(--assistant-body)" stroke="var(--primary)" stroke-width="3"/>
+                        <circle cx="30" cy="38" r="9" fill="#2C2C2C"/><circle cx="70" cy="38" r="9" fill="#2C2C2C"/>
+                        <circle cx="27" cy="35" r="3" fill="white"/><circle cx="33" cy="41" r="1.5" fill="white"/>
+                        <circle cx="67" cy="35" r="3" fill="white"/><circle cx="73" cy="41" r="1.5" fill="white"/>
+                        <ellipse cx="16" cy="58" rx="7" ry="4" fill="var(--blush)" opacity="0.8"/><ellipse cx="84" cy="58" rx="7" ry="4" fill="var(--blush)" opacity="0.8"/>
+                        <path class="mouth-sad" d="M 42 68 Q 50 60 58 68" fill="none" stroke="#2C2C2C" stroke-width="2.5" stroke-linecap="round"/>
+                        <path class="mouth-happy hidden" d="M 40 62 Q 50 72 60 62" fill="none" stroke="#2C2C2C" stroke-width="2.5" stroke-linecap="round"/>
+                        <ellipse cx="50" cy="68" rx="20" ry="14" fill="var(--card-bg)" opacity="0.3"/>
+                    </svg>
+                    <!-- Котик -->
+                    <svg id="svg-cat" class="assistant-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 18 60 Q 15 35 20 25 L 32 35 Q 50 28 68 35 L 80 25 Q 85 35 82 60 Q 85 90 50 90 Q 15 90 18 60 Z" fill="#FFFFFF" stroke="var(--primary)" stroke-width="3" stroke-linejoin="round"/>
+                        <circle cx="34" cy="58" r="10" fill="#3B2E31"/><circle cx="66" cy="58" r="10" fill="#3B2E31"/>
+                        <circle cx="31" cy="55" r="3" fill="#FFFFFF"/><circle cx="37" cy="61" r="1.5" fill="#FFFFFF"/>
+                        <circle cx="63" cy="55" r="3" fill="#FFFFFF"/><circle cx="69" cy="61" r="1.5" fill="#FFFFFF"/>
+                        <circle cx="24" cy="70" r="6" fill="#F9B5C4" opacity="0.7"/><circle cx="76" cy="70" r="6" fill="#F9B5C4" opacity="0.7"/>
+                        <path d="M 47 66 L 53 66 L 50 69 Z" fill="#F5AFAF"/>
+                        <path class="mouth-happy" d="M 42 73 Q 46 77 50 73 Q 54 77 58 73" fill="none" stroke="#3B2E31" stroke-width="2" stroke-linecap="round"/>
+                        <path class="mouth-sad hidden" d="M 45 76 Q 50 72 55 76" fill="none" stroke="#3B2E31" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <!-- Ракушка -->
+                    <svg id="svg-shell" class="assistant-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="shellGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0c3fc" /><stop offset="50%" stop-color="#fbc2eb" /><stop offset="100%" stop-color="#8ec5fc" /></linearGradient>
+                            <linearGradient id="shellInner" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fdfbfb" /><stop offset="100%" stop-color="#ebedee" /></linearGradient>
+                        </defs>
+                        <path d="M 10 70 Q 5 20 50 15 Q 95 20 90 70 Q 75 85 50 85 Q 25 85 10 70 Z" fill="url(#shellGrad)" stroke="var(--primary)" stroke-width="2"/>
+                        <path d="M 50 15 L 50 85" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/><path d="M 30 22 L 38 82" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/><path d="M 70 22 L 62 82" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/>
+                        <g id="pearl-group">
+                            <circle cx="50" cy="55" r="22" fill="#ffffff" stroke="#d5e8f5" stroke-width="2"/><circle cx="50" cy="55" r="22" fill="url(#shellInner)" opacity="0.5"/>
+                            <circle cx="42" cy="52" r="4.5" fill="#2C2C2C"/><circle cx="58" cy="52" r="4.5" fill="#2C2C2C"/>
+                            <circle cx="40.5" cy="50.5" r="1.5" fill="white"/><circle cx="56.5" cy="50.5" r="1.5" fill="white"/>
+                            <ellipse cx="34" cy="60" rx="4" ry="2.5" fill="#F5AFAF" opacity="0.6"/><ellipse cx="66" cy="60" rx="4" ry="2.5" fill="#F5AFAF" opacity="0.6"/>
+                            <path class="mouth-sad" d="M 45 62 Q 50 58 55 62" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round"/>
+                            <path class="mouth-happy hidden" d="M 45 58 Q 50 64 55 58" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round"/>
+                        </g>
+                        <path d="M 15 75 Q 15 95 50 95 Q 85 95 85 75 Q 75 70 50 70 Q 25 70 15 75 Z" fill="url(#shellGrad)" stroke="var(--primary)" stroke-width="2"/>
+                        <path d="M 20 78 Q 50 88 80 78" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/>
+                    </svg>
+                </div>
+
+                <!-- Пузырь справа -->
+                <div class="assistant-bubble bg-white px-5 py-3.5 rounded-2xl text-sm font-bold text-center relative z-10 shadow-sm border border-black/5" style="color: var(--text-main);">
+                    <p id="assistant-advice">Загрузка анализа...</p>
+                    <div class="absolute top-1/2 -left-1.5 transform -translate-y-1/2 w-3 h-3 bg-white rotate-45 rounded-sm"
+                         style="border-left: 1px solid var(--border); border-bottom: 1px solid var(--border);"></div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-4 px-2">
+                <h2 class="text-xl font-black theme-text">Счета</h2>
+                <button onclick="openAccountModal()" class="text-xs font-bold py-2 px-4 rounded-xl bg-white/50 shadow-sm theme-text active:scale-95">+ Добавить</button>
+            </div>
+            <div id="accounts-container" class="grid grid-cols-1 gap-3 mb-8"></div>
+
+            <div class="flex justify-between items-center mb-4 px-2">
+                <h2 class="text-xl font-black theme-text">Цели</h2>
+                <button onclick="openGoalModal()" class="text-xs font-bold py-2 px-4 rounded-xl bg-white/50 shadow-sm theme-text active:scale-95">+ Новая</button>
+            </div>
+            <div id="goals-container" class="grid grid-cols-1 gap-3 mb-8"></div>
+
+            <div class="flex justify-between items-center mb-4 px-2">
+                <h2 class="text-xl font-black theme-text">Платежи</h2>
+                <button onclick="openSubModal()" class="text-xs font-bold py-2 px-4 rounded-xl bg-white/50 shadow-sm theme-text active:scale-95">+ Добавить</button>
+            </div>
+            <div id="subs-container" class="grid grid-cols-1 gap-3 pb-8"></div>
+        </main>
+
+        <!-- ==================== ИСТОРИЯ ==================== -->
+        <main id="page-transactions" class="page pt-16">
+            <h1 class="text-4xl font-black mb-6 theme-text tracking-tight">История</h1>
+
+            <div class="glass-card p-6 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-black theme-text text-lg">Аналитика</h3>
+                    <div class="flex gap-1 p-1 rounded-xl bg-black/5">
+                        <button onclick="setChartType('expense')" id="btn-chart-exp" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-white shadow-sm" style="color: var(--expense);">Расходы</button>
+                        <button onclick="setChartType('income')" id="btn-chart-inc" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all theme-text-muted">Доходы</button>
+                    </div>
+                </div>
+                <div class="relative w-full h-56 flex items-center justify-center">
+                    <canvas id="financeChart"></canvas>
+                    <div id="chart-empty" class="absolute inset-0 flex items-center justify-center hidden">
+                        <p class="text-sm font-bold theme-text-muted">Нет данных</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-4 px-2">
+                <h3 class="font-black theme-text text-lg">Операции</h3>
+                <div class="flex gap-1 p-1 rounded-xl bg-black/5">
+                    <button onclick="setTxFilter('week')" id="btn-filter-week" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all theme-text-muted">Неделя</button>
+                    <button onclick="setTxFilter('month')" id="btn-filter-month" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all theme-text-muted">Месяц</button>
+                    <button onclick="setTxFilter('year')" id="btn-filter-year" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all theme-text-muted">Год</button>
+                    <button onclick="setTxFilter('all')" id="btn-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white shadow-sm theme-text">Все</button>
+                </div>
+            </div>
+            <div id="transactions-list" class="space-y-3 pb-8"></div>
+        </main>
+
+        <!-- ==================== ЗАРПЛАТА ==================== -->
+        <main id="page-salary" class="page pt-16">
+            <h1 class="text-4xl font-black mb-6 theme-text tracking-tight">Зарплата</h1>
+
+            <div id="salary-setup-view" class="glass-card p-8 text-center">
+                <p class="text-sm font-bold theme-text-muted mb-6">Настройте параметры, чтобы рассчитать прогноз выплат</p>
+                <button onclick="openSalaryModal()" class="theme-btn px-8 py-4 font-black shadow-lg w-full">Настроить</button>
+            </div>
+
+            <div id="salary-calc-view" class="hidden space-y-5">
+                <div class="glass-card p-8 text-center relative overflow-hidden" style="background: linear-gradient(135deg, var(--primary-light) 0%, var(--card-bg) 100%);">
+                    <p class="text-sm theme-text-muted font-black mb-1 uppercase tracking-wider">Ближайшая выплата</p>
+                    <h2 id="next-payout-amount" class="text-5xl font-black mb-2 tracking-tighter">0 ₽</h2>
+                    <p id="next-payout-date" class="text-xs font-bold theme-text-muted">Дата: ...</p>
+                    <div class="absolute -top-4 -right-4 opacity-10 text-8xl">💰</div>
+                </div>
+
+                <div class="glass-card p-6 text-sm space-y-3">
+                    <div class="flex justify-between items-center"><span class="theme-text-muted font-bold">Оклад (гросс):</span> <span id="calc-gross" class="font-black text-base">0 ₽</span></div>
+                    <div class="flex justify-between items-center"><span class="theme-text-muted font-bold">НДФЛ (13%):</span> <span id="calc-tax" class="font-black text-base text-red-500">-0 ₽</span></div>
+                    <div class="flex justify-between items-center border-t border-black/5 pt-3 mt-1"><span class="theme-text-muted font-bold">На руки:</span> <span id="calc-net" class="font-black text-lg" style="color: var(--income);">0 ₽</span></div>
+                </div>
+
+                <div class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <button onclick="changeMonth(-1)" class="w-8 h-8 flex items-center justify-center rounded-full bg-black/5 font-black theme-text active:scale-90">&lt;</button>
+                        <h3 id="calendar-month-year" class="font-black theme-text">Месяц</h3>
+                        <button onclick="changeMonth(1)" class="w-8 h-8 flex items-center justify-center rounded-full bg-black/5 font-black theme-text active:scale-90">&gt;</button>
+                    </div>
+
+                    <div class="calendar-grid mb-3">
+                        <div class="text-center text-[10px] font-black theme-text-muted">ПН</div>
+                        <div class="text-center text-[10px] font-black theme-text-muted">ВТ</div>
+                        <div class="text-center text-[10px] font-black theme-text-muted">СР</div>
+                        <div class="text-center text-[10px] font-black theme-text-muted">ЧТ</div>
+                        <div class="text-center text-[10px] font-black theme-text-muted">ПТ</div>
+                        <div class="text-center text-[10px] font-black theme-text-muted">СБ</div>
+                        <div class="text-center text-[10px] font-black theme-text-muted">ВС</div>
+                    </div>
+                    <div id="calendar-days" class="calendar-grid"></div>
+
+                    <div class="flex justify-between mt-5 text-[10px] font-black theme-text-muted bg-black/5 p-3 rounded-xl">
+                        <span class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full" style="background: var(--cal-work-bg); border: 1px solid var(--cal-work-text);"></div> Работа</span>
+                        <span class="flex justify-center items-center gap-1.5"><div class="w-3 h-3 rounded-full" style="background: var(--cal-vacation-bg);"></div> Отпуск</span>
+                        <span class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full" style="background: var(--cal-sick-bg);"></div> Больничный</span>
+                    </div>
+                </div>
+
+                <button onclick="openSalaryModal()" class="w-full text-center text-xs font-black theme-text-muted mt-2">Изменить настройки</button>
+            </div>
+        </main>
+
+        <!-- ==================== КРЕДИТЫ ==================== -->
+        <main id="page-credits" class="page pt-16">
+            <h1 class="text-4xl font-black mb-6 theme-text tracking-tight">Кредиты</h1>
+
+            <div class="flex justify-between items-center mb-4 px-2">
+                <h2 class="text-xl font-black theme-text">Мои кредиты</h2>
+                <button onclick="openCreditModal()" class="text-xs font-bold py-2 px-4 rounded-xl bg-white/50 shadow-sm theme-text active:scale-95">+ Добавить</button>
+            </div>
+            <div id="credits-container" class="grid grid-cols-1 gap-3 mb-8"></div>
+            
+            <div class="glass-card p-6 mt-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-black theme-text text-lg">Общий долг</h3>
+                </div>
+                <h2 id="total-credit-amount" class="text-4xl font-black mb-1" style="color: var(--expense);">0 ₽</h2>
+                <p class="text-xs font-bold theme-text-muted">Осталось выплатить</p>
+            </div>
+        </main>
+
+        <!-- ==================== ПРОФИЛЬ ==================== -->
+        <main id="page-profile" class="page pt-16">
+            <h1 class="text-4xl font-black mb-6 theme-text tracking-tight">Профиль</h1>
+            <div class="glass-card p-6 space-y-6">
+                <div>
+                    <h3 class="font-black theme-text text-lg mb-2">Данные</h3>
+                    <p class="text-xs theme-text-muted font-bold mb-4">Сохраните данные в файл.</p>
+                    <div class="flex flex-col gap-3">
+                        <button onclick="exportData()" class="w-full py-4 rounded-xl font-black theme-btn shadow-md active:scale-95">Скачать копию</button>
+                        <button onclick="document.getElementById('import-file').click()" class="w-full py-4 rounded-xl font-black border-2 theme-text bg-white/50" style="border-color: var(--primary);">Загрузить копию</button>
+                        <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
+                    </div>
+                </div>
+                <hr class="border-black/5">
+                <div>
+                    <h3 class="font-black text-lg mb-2" style="color: var(--expense);">Опасная зона</h3>
+                    <button onclick="resetData()" class="w-full py-4 rounded-xl font-black text-white shadow-md active:scale-95 mt-2" style="background-color: var(--expense);">Сбросить все данные</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- ==================== МОДАЛКИ ==================== -->
+        <div id="credit-modal" class="modal fixed inset-0 items-end sm:items-center justify-center z-50 p-4">
+            <div class="glass-card w-full max-w-sm rounded-[32px] p-6 shadow-2xl relative">
+                <button onclick="closeCreditModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 text-xl font-bold theme-text-muted active:scale-90">&times;</button>
+                <h3 id="credit-modal-title" class="text-2xl font-black mb-6 theme-text">Новый кредит</h3>
+                <form id="credit-form" onsubmit="saveCredit(event)">
+                    <input type="hidden" id="credit-id">
+                    <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Название</label><input type="text" id="credit-name" required placeholder="Кредит на телефон" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+                    <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Общая сумма (₽)</label><input type="number" id="credit-total" required min="1" step="1" placeholder="50000" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+                    <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Ежемесячный платеж (₽)</label><input type="number" id="credit-monthly" required min="1" step="1" placeholder="2500" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+                    <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">День платежа (1-31)</label><input type="number" id="credit-day" required min="1" max="31" placeholder="15" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+                    <div class="mb-8"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Счет для списания</label><select id="credit-account" class="w-full px-5 py-4 rounded-2xl theme-select font-bold"></select></div>
+                    <button type="submit" id="credit-submit-btn" class="w-full theme-btn py-4 rounded-2xl font-black text-lg shadow-lg">Добавить</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="credit-pay-modal" class="modal fixed inset-0 items-end sm:items-center justify-center z-50 p-4">
+            <div class="glass-card w-full max-w-sm rounded-[32px] p-6 shadow-2xl relative">
+                <button onclick="closeCreditPayModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 text-xl font-bold theme-text-muted active:scale-90">&times;</button>
+                <h3 class="text-2xl font-black mb-1 theme-text">Оплата кредита</h3>
+                <p id="credit-pay-name" class="text-sm font-bold theme-text-muted mb-6"></p>
+                <form id="credit-pay-form" onsubmit="saveCreditPayment(event)">
+                    <input type="hidden" id="credit-pay-id">
+                    <div class="mb-5">
+                        <label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Сумма платежа (₽)</label>
+                        <input type="number" id="credit-pay-amount" required min="1" step="1" class="w-full px-5 py-4 rounded-2xl theme-input font-black text-2xl">
+                    </div>
+                    <div class="mb-5">
+                        <label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Счет для списания</label>
+                        <select id="credit-pay-account" class="w-full px-5 py-4 rounded-2xl theme-select font-bold"></select>
+                    </div>
+                    <button type="submit" class="w-full theme-btn py-4 rounded-2xl font-black text-lg shadow-lg">Оплатить</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="add-modal" class="modal fixed inset-0 items-end sm:items-center justify-center z-50 p-4">
+    <div class="glass-card w-full max-w-sm rounded-[32px] p-6 shadow-2xl relative">
+        <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6 sm:hidden"></div>
+        <button onclick="closeAddModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 text-xl font-bold theme-text-muted active:scale-90">&times;</button>
+        <h3 id="tx-modal-title" class="text-2xl font-black mb-6 theme-text">Новая операция</h3>
+        <form id="transaction-form" onsubmit="saveTransaction(event)">
+            <input type="hidden" id="tx-id">
+            <div class="flex gap-2 mb-5 p-1.5 rounded-2xl bg-black/5">
+                <label class="flex-1 cursor-pointer"><input type="radio" name="tx-type" value="expense" class="peer hidden" checked onchange="updateCategories()"><div class="text-center py-2.5 rounded-xl text-sm font-black peer-checked:bg-white peer-checked:shadow-sm transition-all" style="color: var(--expense);">Расход</div></label>
+                <label class="flex-1 cursor-pointer"><input type="radio" name="tx-type" value="income" class="peer hidden" onchange="updateCategories()"><div class="text-center py-2.5 rounded-xl text-sm font-black peer-checked:bg-white peer-checked:shadow-sm transition-all" style="color: var(--income);">Доход</div></label>
+            </div>
+            <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Сумма (₽)</label><input type="number" id="tx-amount" required min="1" step="0.01" placeholder="0.00" class="w-full px-5 py-4 rounded-2xl theme-input text-2xl font-black"></div>
+            <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Категория</label><select id="tx-category" class="w-full px-5 py-4 rounded-2xl theme-select font-bold"></select></div>
+            <div class="mb-8"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Счет</label><select id="tx-account" class="w-full px-5 py-4 rounded-2xl theme-select font-bold"></select></div>
+            <button type="submit" id="tx-submit-btn" class="w-full theme-btn py-4 rounded-2xl font-black text-lg shadow-lg">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+        <div id="account-modal" class="modal fixed inset-0 items-end sm:items-center justify-center z-50 p-4">
+    <div class="glass-card w-full max-w-sm rounded-[32px] p-6 shadow-2xl relative">
+        <button onclick="closeAccountModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 text-xl font-bold theme-text-muted active:scale-90">&times;</button>
+        <h3 id="account-modal-title" class="text-2xl font-black mb-6 theme-text">Новый счет</h3>
+        <form id="account-form" onsubmit="saveAccount(event)">
+            <input type="hidden" id="account-id">
+            <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Название</label><input type="text" id="acc-name" required placeholder="Карта Сбер" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+<div class="mb-5">
+    <label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Иконка</label>
+    <div class="flex items-center gap-3">
+        <div id="acc-image-preview" class="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden" style="background: var(--primary-light); border: 1px solid var(--border);">
+            <span class="text-xl theme-text-muted">—</span>
+        </div>
+        <div class="flex-1 flex flex-col gap-2">
+            <label class="cursor-pointer text-xs font-black py-2 px-3 rounded-xl text-center" style="background: var(--primary-light); color: var(--accent); border: 1px solid var(--border);">
+                Загрузить картинку
+                <input type="file" id="acc-image-file" accept="image/*" class="hidden">
+            </label>
+            <button type="button" onclick="clearEntityImage('acc')" class="text-[11px] font-bold theme-text-muted text-left">Убрать картинку</button>
+        </div>
+        <input type="text" id="acc-icon" maxlength="2" placeholder="💳" class="w-14 px-2 py-2 rounded-xl theme-input text-center text-xl">
+    </div>
+    <input type="hidden" id="acc-image">
+</div>            <div class="mb-8"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Баланс (₽)</label><input type="number" id="acc-balance" required step="0.01" placeholder="0.00" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+            <button type="submit" id="account-submit-btn" class="w-full theme-btn py-4 rounded-2xl font-black text-lg shadow-lg">Создать</button>
+        </form>
+    </div>
+</div>
+
+        <div id="sub-modal" class="modal fixed inset-0 items-end sm:items-center justify-center z-50 p-4">
+    <div class="glass-card w-full max-w-sm rounded-[32px] p-6 shadow-2xl relative">
+        <button onclick="closeSubModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 text-xl font-bold theme-text-muted active:scale-90">&times;</button>
+        <h3 id="sub-modal-title" class="text-2xl font-black mb-6 theme-text">Новый платеж</h3>
+        <form id="sub-form" onsubmit="saveSub(event)">
+            <input type="hidden" id="sub-id">
+            <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Название</label><input type="text" id="sub-name" required placeholder="Яндекс Плюс" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+            <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Сумма (₽)</label><input type="number" id="sub-amount" required min="1" step="0.01" placeholder="299" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+            <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">День оплаты</label><input type="number" id="sub-day" required min="1" max="31" placeholder="15" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+            <div class="mb-5">
+    <label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Иконка (необязательно)</label>
+    <div class="flex items-center gap-3">
+        <div id="sub-image-preview" class="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden" style="background: var(--primary-light); border: 1px solid var(--border);">
+            <span class="text-xl theme-text-muted">—</span>
+        </div>
+        <div class="flex-1 flex flex-col gap-2">
+            <label class="cursor-pointer text-xs font-black py-2 px-3 rounded-xl text-center" style="background: var(--primary-light); color: var(--accent); border: 1px solid var(--border);">
+                Загрузить картинку
+                <input type="file" id="sub-image-file" accept="image/*" class="hidden">
+            </label>
+            <button type="button" onclick="clearEntityImage('sub')" class="text-[11px] font-bold theme-text-muted text-left">Убрать картинку</button>
+        </div>
+    </div>
+    <input type="hidden" id="sub-image">
+</div>
+            <div class="mb-8"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Счет</label><select id="sub-account" class="w-full px-5 py-4 rounded-2xl theme-select font-bold"></select></div>
+            <button type="submit" id="sub-submit-btn" class="w-full theme-btn py-4 rounded-2xl font-black text-lg shadow-lg">Добавить</button>
+        </form>
+    </div>
+</div>
+
+        <div id="goal-modal" class="modal fixed inset-0 items-end sm:items-center justify-center z-50 p-4">
+    <div class="glass-card w-full max-w-sm rounded-[32px] p-6 shadow-2xl relative">
+        <button onclick="closeGoalModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 text-xl font-bold theme-text-muted active:scale-90">&times;</button>
+        <h3 id="goal-modal-title" class="text-2xl font-black mb-6 theme-text">Новая цель</h3>
+        <form id="goal-form" onsubmit="saveGoal(event)">
+            <input type="hidden" id="goal-id">
+            <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Название</label><input type="text" id="goal-name" required placeholder="На отпуск" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+            <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Сумма (₽)</label><input type="number" id="goal-target" required min="1" step="1" placeholder="50000" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+<div class="mb-8">
+    <label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Иконка</label>
+    <div class="flex items-center gap-3">
+        <div id="goal-image-preview" class="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden" style="background: var(--primary-light); border: 1px solid var(--border);">
+            <span class="text-xl theme-text-muted">—</span>
+        </div>
+        <div class="flex-1 flex flex-col gap-2">
+            <label class="cursor-pointer text-xs font-black py-2 px-3 rounded-xl text-center" style="background: var(--primary-light); color: var(--accent); border: 1px solid var(--border);">
+                Загрузить картинку
+                <input type="file" id="goal-image-file" accept="image/*" class="hidden">
+            </label>
+            <button type="button" onclick="clearEntityImage('goal')" class="text-[11px] font-bold theme-text-muted text-left">Убрать картинку</button>
+        </div>
+        <input type="text" id="goal-icon" maxlength="2" placeholder="✈️" class="w-14 px-2 py-2 rounded-xl theme-input text-center text-xl">
+    </div>
+    <input type="hidden" id="goal-image">
+</div>            <button type="submit" id="goal-submit-btn" class="w-full theme-btn py-4 rounded-2xl font-black text-lg shadow-lg">Создать</button>
+        </form>
+    </div>
+</div>
+
+        <div id="deposit-modal" class="modal fixed inset-0 items-end sm:items-center justify-center z-50 p-4">
+            <div class="glass-card w-full max-w-sm rounded-[32px] p-6 shadow-2xl relative">
+                <button onclick="closeDepositModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 text-xl font-bold theme-text-muted active:scale-90">&times;</button>
+                <h3 class="text-2xl font-black mb-1 theme-text">Пополнить</h3>
+                <p id="deposit-goal-name" class="text-sm font-bold theme-text-muted mb-6"></p>
+                <form id="deposit-form" onsubmit="saveDeposit(event)">
+                    <input type="hidden" id="deposit-goal-id">
+                    <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Сумма (₽)</label><input type="number" id="deposit-amount" required min="1" step="1" placeholder="0" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+                    <div class="mb-8"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Счет</label><select id="deposit-account" class="w-full px-5 py-4 rounded-2xl theme-select font-bold"></select></div>
+                    <button type="submit" class="w-full theme-btn py-4 rounded-2xl font-black text-lg shadow-lg">Отложить</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="salary-modal" class="modal fixed inset-0 items-end sm:items-center justify-center z-50 p-4">
+            <div class="glass-card w-full max-w-sm rounded-[32px] p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                <button onclick="closeSalaryModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 text-xl font-bold theme-text-muted active:scale-90">&times;</button>
+                <h3 class="text-2xl font-black mb-6 theme-text">Настройки ЗП</h3>
+                <form id="salary-form" onsubmit="saveSalarySettings(event)">
+                    <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Оклад (₽)</label><input type="number" id="sal-gross" required min="1" placeholder="50000" class="w-full px-5 py-4 rounded-2xl theme-input font-bold"></div>
+                    <div class="mb-5"><label class="block text-xs font-black mb-2 theme-text uppercase tracking-wider">Стаж</label>
+                        <select id="sal-exp" class="w-full px-5 py-4 rounded-2xl theme-select font-bold">
+                            <option value="0">Менее 5 лет (60%)</option>
+                            <option value="5">От 5 до 8 лет (80%)</option>
+                            <option value="8">Более 8 лет (100%)</option>
+                        </select>
+                    </div>
+                    <div class="mb-8 p-4 rounded-2xl bg-black/5">
+                        <label class="block text-xs font-black mb-3 theme-text uppercase tracking-wider">Дни выплат</label>
+                        <div class="flex gap-3">
+                            <input type="number" id="sal-day-1" required min="1" max="31" placeholder="Аванс 25" class="w-1/2 px-4 py-3 rounded-xl theme-input font-bold text-sm">
+                            <input type="number" id="sal-day-2" required min="1" max="31" placeholder="ЗП 10" class="w-1/2 px-4 py-3 rounded-xl theme-input font-bold text-sm">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full theme-btn py-4 rounded-2xl font-black text-lg shadow-lg">Сохранить</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="day-modal" class="modal fixed inset-0 items-end sm:items-center justify-center z-50 p-4">
+            <div class="glass-card w-full max-w-xs rounded-[32px] p-6 shadow-2xl relative text-center">
+                <button onclick="closeDayModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-black/5 text-xl font-bold theme-text-muted active:scale-90">&times;</button>
+                <h3 class="text-xl font-black mb-6 theme-text">День <span id="day-modal-date"></span></h3>
+                <input type="hidden" id="day-modal-id">
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="setDayStatus('work')" class="py-4 rounded-2xl font-black theme-text shadow-sm border border-black/5 active:scale-95 transition-transform" style="background: var(--cal-work-bg);">Рабочий</button>
+                    <button onclick="setDayStatus('vacation')" class="py-4 rounded-2xl font-black shadow-sm border border-black/5 active:scale-95 transition-transform" style="background: var(--cal-vacation-bg); color: var(--cal-vacation-text);">Отпуск</button>
+                    <button onclick="setDayStatus('sick')" class="py-4 rounded-2xl font-black shadow-sm border border-black/5 active:scale-95 transition-transform" style="background: var(--cal-sick-bg); color: var(--cal-sick-text);">Больничный</button>
+                    <button onclick="setDayStatus('weekend')" class="py-4 rounded-2xl font-black shadow-sm border border-black/5 active:scale-95 transition-transform" style="background: var(--cal-weekend-bg); color: var(--cal-weekend-text);">Выходной</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+            <!-- ==================== НИЖНЕЕ МЕНЮ ==================== -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item flex flex-col items-center justify-center w-14 font-black theme-text" data-target="home">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span>Главная</span>
+            </a>
+            <a href="#" class="nav-item flex flex-col items-center justify-center w-14 font-black theme-text-muted" data-target="transactions">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                <span>История</span>
+            </a>
+
+            <div class="relative -top-6">
+                <button onclick="openAddModal()" class="rounded-full theme-btn flex items-center justify-center shadow-xl active:scale-90 transition-transform">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                </button>
+            </div>
+
+            <a href="#" class="nav-item flex flex-col items-center justify-center w-14 font-black theme-text-muted" data-target="salary">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Зарплата</span>
+            </a>
+            <a href="#" class="nav-item flex flex-col items-center justify-center w-14 font-black theme-text-muted" data-target="credits">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                <span>Кредиты</span>
+            </a>
+        </nav>
+
+
+        <script src="app.js"></script>
+    
+    <!-- Подключение PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered', reg))
+                    .catch(err => console.log('SW error', err));
+            });
+        }
+    </script>
+</body>

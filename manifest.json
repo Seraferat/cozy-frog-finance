@@ -1,0 +1,20 @@
+{
+  "name": "Cozy Frog Finance",
+  "short_name": "Cozy Finance",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fff0f3",
+  "theme_color": "#f477a4",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=f477a4",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://api.dicebear.com/7.x/bottts/svg?seed=Felix&backgroundColor=f477a4",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
