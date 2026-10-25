@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cozy-frog-v1';
+const CACHE_NAME = 'cozy-frog-v3';
 const ASSETS = [
   './',
   './index.html',

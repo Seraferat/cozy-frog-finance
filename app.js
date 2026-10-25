@@ -56,8 +56,7 @@ function updateAssistantView(themeName) {
 // 3. НАВИГАЦИЯ
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    const currentTheme = localStorage.getItem('frog-finance-theme') || 'theme-pink';
-    updateAssistantView(currentTheme);
+const currentTheme = localStorage.getItem('frog-finance-theme') || 'theme-frog';    updateAssistantView(currentTheme);
 
     const navItems = document.querySelectorAll('.nav-item[data-target]');
     const pages = document.querySelectorAll('.page');
@@ -390,7 +389,7 @@ function exportData() {
         frog_subs: subscriptions,
         frog_salary_settings: salarySettings,
         frog_calendar_data: calendarData,
-        frog_finance_theme: localStorage.getItem('frog-finance-theme') || 'theme-pink'
+        frog_finance_theme: localStorage.getItem('frog-finance-theme') || 'theme-frog'
     };
 
     const dataStr = JSON.stringify(backupData, null, 2);
